@@ -29,3 +29,46 @@ def get_books(db: Session):
 
 def get_books_by_category(db: Session, category_id: int):
     return db.query(models.Book).filter(models.Book.category_id == category_id).all()
+
+
+def get_category(db: Session, category_id: int):
+    return db.query(models.Category).filter(models.Category.id == category_id).first()
+
+def get_category_by_title(db: Session, title: str):
+    return db.query(models.Category).filter(models.Category.title == title).first()
+
+def update_category(db: Session, category_id: int, title: str):
+    category = get_category(db, category_id)
+    if category:
+        category.title = title
+        db.commit()
+        db.refresh(category)
+    return category
+
+def delete_category(db: Session, category_id: int):
+    category = get_category(db, category_id)
+    if category:
+        db.delete(category)
+        db.commit()
+    return category
+
+
+def get_book(db: Session, book_id: int):
+    return db.query(models.Book).filter(models.Book.id == book_id).first()
+
+def update_book(db: Session, book_id: int, book_data: dict):
+    book = get_book(db, book_id)
+    if book:
+        for key, value in book_data.items():
+            if value is not None:
+                setattr(book, key, value)
+        db.commit()
+        db.refresh(book)
+    return book
+
+def delete_book(db: Session, book_id: int):
+    book = get_book(db, book_id)
+    if book:
+        db.delete(book)
+        db.commit()
+    return book
